@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Magic Ice Cream Maker</title>
+<style>
+:root{--pink:#ff8fb1;--cream:#fff6e6;--lav:#d9c8ff;--mint:#b8f0d4;--sky:#bfe3ff;--peach:#ffd3b0;--choc:#5a3425;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+*{box-sizing:border-box}html{height:100%}
+body{margin:0;min-height:100%;font-family:"Baloo 2","Comic Sans MS","Trebuchet MS",system-ui,sans-serif;color:var(--choc);background:linear-gradient(180deg,var(--sky),var(--lav) 55%,#ffe3ef);overflow-x:hidden}
+button{font:inherit;color:inherit;cursor:pointer;border:0}
+button:focus-visible{outline:4px solid #7a5cff;outline-offset:2px}
+.deco{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.deco span{position:absolute;opacity:.55;animation:float 7s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-16px) rotate(8deg)}}
+.screen{position:relative;z-index:1;min-height:100vh;display:none;flex-direction:column;padding:10px 14px 16px}
+.screen.on{display:flex}
+#welcome{align-items:center;justify-content:center;text-align:center;gap:10px}
+h1{font-size:clamp(34px,7vw,68px);margin:0;color:#e0457b;text-shadow:3px 3px 0 #fff}
+.sub{font-size:clamp(20px,3.4vw,32px);margin:0}
+.hero{font-size:clamp(70px,14vw,130px);line-height:1;display:flex;gap:14px;align-items:flex-end}
+.big{background:var(--pink);color:#fff;font-size:clamp(26px,4vw,40px);font-weight:800;padding:14px 44px;border-radius:999px;box-shadow:0 8px 0 #d9658a,0 14px 24px #0002;transition:transform .12s}
+.big:hover{transform:translateY(-3px)}.big:active{transform:translateY(4px);box-shadow:0 3px 0 #d9658a}
+.big.alt{background:#7fd8b0;box-shadow:0 8px 0 #4fae85}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;background:#fffc;border-radius:22px;padding:8px 12px;box-shadow:0 4px 14px #0001}
+.prog{display:flex;flex-direction:column;gap:3px;font-weight:800;font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:3px}
+.chip{width:22px;height:22px;border-radius:50%;background:#eee;font-size:12px;display:grid;place-items:center;color:#aaa}
+.chip.on{background:var(--pink);color:#fff}
+.stars{letter-spacing:2px}
+.ctl{display:flex;flex-wrap:wrap;gap:6px}
+.ctl button{background:var(--cream);border-radius:14px;padding:8px 12px;font-weight:700;font-size:15px;box-shadow:0 3px 0 #e2cfae}
+.ctl button:active{transform:translateY(2px)}
+.stage{flex:1;display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:14px;padding:10px 0}
+.cust{width:min(300px,92vw);text-align:center}
+.bubble{background:#fff;border-radius:26px;padding:12px 16px;font-size:clamp(18px,2.6vw,24px);font-weight:700;box-shadow:0 6px 16px #0002;position:relative;min-height:70px}
+.bubble:after{content:"";position:absolute;bottom:-14px;left:50%;margin-left:-14px;border:14px solid transparent;border-top-color:#fff;border-bottom:0}
+.face{font-size:clamp(90px,14vw,130px);line-height:1.1;margin-top:18px;display:inline-block;animation:idle 2.6s ease-in-out infinite}
+.face.happy{animation:happy .7s ease 2}.face.eat{animation:happy .5s ease infinite}
+@keyframes idle{50%{transform:translateY(-6px)}}
+@keyframes happy{30%{transform:translateY(-22px) rotate(-8deg) scale(1.1)}60%{transform:translateY(0) rotate(8deg)}}
+.cname{font-weight:800}
+.order{width:min(260px,92vw);background:#fff;border-radius:26px;padding:12px;text-align:center;box-shadow:0 6px 16px #0002;border:4px dashed var(--pink)}
+.order h3{margin:0 0 6px;font-size:18px;color:#e0457b}
+.ol{font-size:clamp(56px,9vw,84px);font-weight:900;line-height:1}
+.ol small{font-size:.55em;opacity:.8}
+.pic{font-size:clamp(70px,11vw,100px)}
+.seq{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.seq b{min-width:48px;padding:6px 8px;border-radius:14px;background:var(--cream);font-size:26px}
+.seq b.cur{background:var(--pink);color:#fff;transform:scale(1.15)}.seq b.ok{background:var(--mint)}
+.say{margin-top:6px;background:var(--lav);border-radius:14px;padding:6px 12px;font-weight:800;font-size:16px}
+.cbox{position:relative;width:190px;display:flex;flex-direction:column;align-items:center}
+.tower{position:relative;width:150px;height:290px;margin-bottom:-34px;z-index:2}
+.scoop{position:absolute;left:calc(50% - 52px);width:104px;height:80px;border-radius:50% 50% 44% 44%;display:grid;place-items:center;font-size:38px;font-weight:900;box-shadow:inset 0 -8px 0 #0001,0 4px 8px #0002;animation:drop .6s cubic-bezier(.3,1.5,.5,1)}
+.scoop:before{content:"";position:absolute;left:14px;top:10px;width:26px;height:12px;border-radius:50%;background:#fff8;transform:rotate(-25deg)}
+.scoop i{position:absolute;bottom:-12px;left:0;right:0;height:22px;border-radius:0 0 50% 50%;background:inherit;filter:brightness(.95);z-index:-1}
+@keyframes drop{from{transform:translateY(-220px) scale(.7);opacity:0}}
+.cone{width:120px;height:150px;z-index:1;clip-path:polygon(0 0,100% 0,50% 100%);background:repeating-linear-gradient(45deg,#e9a84e 0 9px,#c98433 9px 12px),#e9a84e;background-blend-mode:multiply}
+.cone2{position:absolute;bottom:0;width:120px;height:150px;clip-path:polygon(0 0,100% 0,50% 100%);background:repeating-linear-gradient(-45deg,transparent 0 9px,#a8692455 9px 12px)}
+.cwrap{position:relative;z-index:1}
+.msg{min-height:42px;font-size:clamp(20px,3vw,28px);font-weight:800;color:#e0457b;text-align:center;margin:6px 0 2px}
+.shelf{background:linear-gradient(#fff9,#ffe8cf);border-radius:26px;padding:12px;display:flex;flex-wrap:wrap;gap:12px;justify-content:center;box-shadow:0 -4px 14px #0001, inset 0 -8px 0 #e8c9a0}
+.opt{width:clamp(86px,15vw,118px);height:clamp(86px,15vw,118px);border-radius:50%;font-size:clamp(34px,6vw,48px);font-weight:900;color:var(--choc);box-shadow:inset 0 -8px 0 #0001,0 6px 10px #0003;transition:transform .12s}
+.opt:hover{transform:scale(1.08) translateY(-4px)}
+.opt.wob{animation:wob .6s}
+@keyframes wob{20%{transform:rotate(-14deg)}40%{transform:rotate(12deg)}60%{transform:rotate(-8deg)}80%{transform:rotate(5deg)}}
+.opt small{font-size:.62em;font-weight:800}
+.over{position:fixed;inset:0;z-index:20;background:#5a34259c;display:none;place-items:center;padding:16px}
+.over.on{display:grid}
+.card{background:var(--cream);border-radius:32px;padding:24px;text-align:center;max-width:460px;box-shadow:0 12px 40px #0004;animation:pop .5s}
+@keyframes pop{from{transform:scale(.6);opacity:0}}
+.card h2{margin:0 0 6px;font-size:clamp(30px,6vw,44px);color:#e0457b}
+.card p{font-size:22px;margin:6px 0 14px}
+.card .row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.card .big{font-size:22px;padding:12px 26px}
+.conf{position:fixed;top:-40px;z-index:30;font-size:28px;pointer-events:none;animation:fall 1.8s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+.spark{position:absolute;z-index:5;pointer-events:none;animation:sp .8s forwards;font-size:24px}
+@keyframes sp{to{transform:translateY(-50px) scale(1.6);opacity:0}}
+@media (max-width:640px){.stage{gap:6px}.tower{transform:scale(.85);transform-origin:bottom}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important}}
+
+.scene{position:fixed;inset:0;z-index:0;pointer-events:none}
+.wall{position:absolute;inset:0 0 30% 0;background:radial-gradient(ellipse at 50% 0,#fff8,transparent 65%),repeating-linear-gradient(90deg,#ffe6ef 0 44px,#ffd6e5 44px 88px)}
+.floor{position:absolute;inset:70% 0 0 0;background:linear-gradient(#0000,#0003),repeating-conic-gradient(#fbebd2 0 25%,#ecd0a8 0 50%) 0 0/84px 84px;border-top:10px solid #c98d5a;box-shadow:0 -6px 12px #0002}
+.awn{position:absolute;top:0;left:0;right:0;height:40px;z-index:0;background:repeating-linear-gradient(90deg,#ff7aa2 0 40px,#fff 40px 80px);box-shadow:0 4px 8px #0003}
+.awn:after{content:"";position:absolute;left:0;right:0;top:100%;height:20px;background:radial-gradient(circle at 20px 0,#ff7aa2 19.5px,transparent 20px),radial-gradient(circle at 60px 0,#fff 19.5px,transparent 20px);background-size:80px 20px}
+#game{padding-top:66px}
+.bar{background:linear-gradient(#fff,#fff0f5);border:3px solid #fff;box-shadow:0 6px 16px #0003}
+.ctl button{background:linear-gradient(#fffdf6,#ffe9c7);border:2px solid #f0cf9a}
+.big{background:linear-gradient(#ff9fc0,#f0568f);box-shadow:0 8px 0 #b93a6c,0 14px 24px #0003}.big.alt{background:linear-gradient(#97e6c3,#45b988);box-shadow:0 8px 0 #2f8f66,0 14px 24px #0003}
+.shelf{background:linear-gradient(#f6d9ae,#d9a468);border:4px solid #b9803f;border-radius:20px;box-shadow:0 8px 0 #9b6529,0 16px 24px #0003,inset 0 4px 0 #fff6}
+.order{background:#fffdf6;border:6px solid #8b5a2b;border-radius:14px;box-shadow:0 10px 18px #0003,inset 0 0 0 3px #f1dcb8}
+.bubble{border:3px solid #f3d9e4;box-shadow:0 8px 18px #0003}
+.cone{background:repeating-linear-gradient(45deg,#c98433 0 3px,transparent 3px 14px),repeating-linear-gradient(-45deg,#c98433 0 3px,transparent 3px 14px),linear-gradient(90deg,#e0a24f,#f7d28c 45%,#e0a24f);background-blend-mode:normal}
+.cone2{background:none}
+.face{display:block;width:clamp(130px,19vw,200px);margin:12px auto 0;font-size:0;transform-origin:50% 100%;animation:idle 3s ease-in-out infinite}
+.face svg,.hc svg{display:block;width:100%;height:auto;filter:drop-shadow(0 6px 6px #0002)}
+@keyframes idle{50%{transform:scaleY(1.025)}}
+.hero{align-items:flex-end}.hc{width:clamp(110px,18vw,180px)}
+.wv{transform-origin:148px 170px;animation:wave 2s ease-in-out infinite}
+@keyframes wave{50%{transform:rotate(-14deg)}}
+.bk{transform-origin:100px 102px;animation:blink 4.2s infinite}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}
+@media (prefers-reduced-motion:reduce){.wv,.bk,.face{animation:none}}
+</style></head><body>
+<div class="deco" aria-hidden="true"></div>
+<div class="scene" aria-hidden="true"><div class="wall"></div><div class="floor"></div></div>
+
+<section id="welcome" class="screen on">
+  <h1>The Magic Ice Cream Maker 🍦✨</h1>
+  <p class="sub">Let’s make magical ice cream!</p>
+  <div class="hero" id="hero" aria-hidden="true"></div>
+  <button class="big" id="startBtn">Start Game ▶</button>
+  <button class="ctl" style="background:none;box-shadow:none"><span></span></button>
+  <div class="ctl"><button id="wSound" aria-label="Toggle sound">🔊 Sound ON</button></div>
+</section>
+
+<section id="game" class="screen"><div class="awn" aria-hidden="true"></div>
+  <div class="bar">
+    <div class="prog">
+      <div id="pLet">Letters collected: 0 / 13</div>
+      <div class="chips" id="chips"></div>
+      <div id="pOrd">Orders completed: 0 / 7 <span class="stars" id="stars"></span></div>
+    </div>
+    <div style="font-weight:800;font-size:18px" id="lvl"></div>
+    <div class="ctl">
+      <button id="bRep" hidden>🔁</button>
+      <button id="bPause">⏸ Pause</button>
+      <button id="bRestart">↺ Restart</button>
+      <button id="bNext">Next ➜</button>
+      <button id="bSound">🔊 Sound</button>
+      <button id="bHome">🏠 Home</button>
+    </div>
+  </div>
+  <div class="stage">
+    <div class="cust"><div class="bubble" id="bubble"></div><div class="face" id="face">🐻</div><div class="cname" id="cname"></div></div>
+    <div class="cbox"><div class="tower" id="tower"></div><div class="cwrap"><div class="cone"></div><div class="cone2"></div></div></div>
+    <div class="order"><h3>My order</h3><div id="orderBody"></div><div class="say" id="instr"></div></div>
+  </div>
+  <div class="msg" id="msg" aria-live="polite"></div>
+  <div class="shelf" id="shelf"></div>
+</section>
+
+<div class="over" id="done"><div class="card">
+  <div style="font-size:70px" id="doneFace"></div>
+  <h2>Wonderful!</h2><p>You made a magical ice cream! 🍦</p>
+  <div class="row"><button class="big alt" id="bMore">Make Another Ice Cream</button><button class="big" id="bAgain">Play Again</button></div>
+</div></div>
+<div class="over" id="pause"><div class="card"><h2>Paused ⏸</h2><button class="big" id="bResume">Keep Playing ▶</button></div></div>
+
+<script>
+"use strict";
+/* ---------- DATA ---------- */
+const LETTERS=[
+ {u:"A",l:"a",word:"Apple",pic:"🍎",name:"ay",snd:"/æ/"},
+ {u:"B",l:"b",word:"Ball",pic:"⚽",name:"bee",snd:"/b/"},
+ {u:"C",l:"c",word:"Cat",pic:"🐱",name:"see",snd:"/k/"},
+ {u:"D",l:"d",word:"Dog",pic:"🐶",name:"dee",snd:"/d/"},
+ {u:"E",l:"e",word:"Egg",pic:"🥚",name:"ee",snd:"/ɛ/"},
+ {u:"F",l:"f",word:"Fish",pic:"🐟",name:"eff",snd:"/f/"},
+ {u:"G",l:"g",word:"Goat",pic:"🐐",name:"gee",snd:"/g/"},
+ {u:"H",l:"h",word:"Hat",pic:"🎩",name:"aitch",snd:"/h/"},
+ {u:"I",l:"i",word:"Insect",pic:"🐞",name:"eye",snd:"/ɪ/"},
+ {u:"J",l:"j",word:"Juice",pic:"🧃",name:"jay",snd:"/dʒ/"},
+ {u:"K",l:"k",word:"Kite",pic:"🪁",name:"kay",snd:"/k/"},
+ {u:"L",l:"l",word:"Lion",pic:"🦁",name:"ell",snd:"/l/"},
+ {u:"M",l:"m",word:"Moon",pic:"🌙",name:"em",snd:"/m/"}];
+const BY=Object.fromEntries(LETTERS.map(x=>[x.u,x]));
+const FLAV=["#ffb3c6","#d9c8ff","#b8f0d4","#bfe3ff","#ffd3b0","#fff0b8","#ffc9e6","#c9f2ff"];
+const CUST=[{e:"🐻",n:"Benny Bear",hi:"Hello, little chef!"},{e:"🐰",n:"Bella Bunny",hi:"Hi, little chef!"},{e:"🐱",n:"Kit Cat",hi:"Meow! Hello, chef!"},{e:"🦊",n:"Felix Fox",hi:"Hello, friend!"},{e:"🐧",n:"Pip Penguin",hi:"Hello, little chef!"}];
+const OK=["Great job!","Wonderful!","You found it!","That’s right!","Fantastic!","Let’s add it!","You’re a great little chef!"];
+const NO=["Oops! Let’s try again!","Almost! Look carefully.","Can you find the right letter?","Let’s try another scoop!"];
+const ORDERS=[["A","B","C"],["D","E","F"],["G","H","I"],["J","K","L","M"]];
+const ACTS=7; // 0: level1, 1-4: level2, 5: level3, 6: level4
+const LVL=["Level 1: Letter Scoops","Level 2: Letter Tower","Level 2: Letter Tower","Level 2: Letter Tower","Level 2: Letter Tower","Level 3: Picture Match","Level 4: Magic Challenge"];
+
+/* ---------- CHARACTERS ---------- */
+const KIND={"🐻":"bear","🐰":"bunny","🐱":"cat","🦊":"fox","🐧":"penguin"};
+const AN={bear:{f:"#b8773f",d:"#7d4a26",b:"#ecd0a4",n:"#3b2416",t:"#e0457b"},bunny:{f:"#f4eef1",d:"#d6c9d1",b:"#ffffff",n:"#ff8fb1",t:"#7a5cff"},cat:{f:"#f2a24c",d:"#bf6f26",b:"#fff1d8",n:"#ff8fb1",t:"#3aa6ff"},fox:{f:"#ea6f2a",d:"#a8431a",b:"#ffffff",n:"#2b1a12",t:"#2fbf7f"},penguin:{f:"#2c3c4e",d:"#18232f",b:"#ffffff",n:"#ff9a2e",t:"#ff5c8a"}};
+function chr(k){
+ const a=AN[k],u="v"+Math.random().toString(36).slice(2,8),R=`url(#${u})`,pg=k=="penguin";
+ const o=(x,y,rx,ry,c,r=0)=>`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${c}" transform="rotate(${r} ${x} ${y})"/>`;
+ const P=(x,y,rx,ry,c,r=0)=>o(x,y,rx,ry,c,r)+o(x,y,rx,ry,R,r);
+ const M=t=>t+`<g transform="translate(200 0) scale(-1 1)">${t}</g>`;
+ let s=`<svg viewBox="0 0 200 300" style="overflow:visible" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="${u}" cx=".35" cy=".28" r=".85"><stop offset="0" stop-color="#fff" stop-opacity=".42"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".3"/></radialGradient></defs>`;
+ s+=o(100,289,62,9,"#0003");
+ if(k=="bear")s+=P(152,262,13,13,a.f);
+ if(k=="bunny")s+=P(150,260,18,18,"#fff");
+ if(k=="cat")s+=`<path d="M138 262q52 0 40-78" stroke="${a.f}" stroke-width="15" fill="none" stroke-linecap="round"/>`;
+ if(k=="fox")s+=P(160,238,17,40,a.f,38)+o(176,210,9,13,"#fff",38);
+ if(k=="bear")s+=M(P(62,68,17,17,a.f)+o(62,69,9,9,"#e8b98c"));
+ if(k=="bunny")s+=M(P(78,46,14,42,a.f,-8)+o(78,48,7,30,"#ffb3c6",-8));
+ if(k=="cat"||k=="fox")s+=M(`<path d="M52 92L58 36L96 68Z" fill="${a.f}"/><path d="M62 80L65 52L84 68Z" fill="${k=="fox"?a.d:"#ffb3c6"}"/>`);
+ s+=M(P(78,254,15,24,a.f)+P(72,277,21,10,pg?"#ff9a2e":a.d));
+ s+=P(100,200,53,66,a.f)+P(100,208,35,50,a.b);
+ s+=P(52,198,13,37,a.f,14)+P(47,231,11,11,pg?a.d:a.f);
+ s+=`<g class="wv">`+P(148,198,13,37,a.f,-14)+P(153,231,11,11,pg?a.d:a.f)+`</g>`;
+ s+=`<path d="M100 160L80 148V172Z M100 160L120 148V172Z" fill="${a.t}"/>`+o(100,160,5,5,a.t)+o(100,160,5,5,R);
+ s+=P(100,104,55,49,a.f);
+ if(pg)s+=P(100,112,40,34,"#fff");
+ if(k=="bear")s+=P(100,126,25,18,a.b);
+ if(k=="bunny")s+=P(100,126,21,15,"#fff");
+ if(k=="cat")s+=P(100,126,22,15,a.b);
+ if(k=="fox")s+=P(78,126,26,19,"#fff")+P(122,126,26,19,"#fff")+P(100,128,17,14,"#fff");
+ if(k=="cat")s+=`<path d="M100 58v14M88 60l3 12M112 60l-3 12" stroke="${a.d}" stroke-width="4" stroke-linecap="round"/>`;
+ s+=`<g opacity=".55">${o(64,122,8,5,"#ff8fb1")}${o(136,122,8,5,"#ff8fb1")}</g>`;
+ s+=`<g class="bk">`+[80,120].map(x=>o(x,100,10,12,"#fff")+o(x,102,6.5,8,"#2a1a12")+o(x+2.5,98,2.6,2.6,"#fff")+o(x-2,106,1.4,1.4,"#fff")).join("")+`</g>`;
+ if(pg)s+=P(100,120,13,8,a.n);
+ else{s+=P(100,117,8.5,6,a.n)+o(98,115,2.5,1.8,"#fff")+`<path d="M100 123v8M87 131Q100 144 113 131" stroke="#3b2416" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  if(k=="bunny")s+=`<rect x="95" y="134" width="10" height="10" rx="2" fill="#fff" stroke="#d6c9d1"/>`;
+  if(k!="bear")s+=`<g stroke="#5b4636" stroke-width="1.6" stroke-linecap="round" opacity=".7">${M('<path d="M72 126l-26-4M72 131l-26 5"/>')}</g>`}
+ return s+"</svg>";
+}
+
+/* ---------- HELPERS ---------- */
+const $=id=>document.getElementById(id);
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const S={act:0,step:0,steps:[],tower:[],collected:new Set(),doneActs:new Set(),sound:false,locked:false,paused:false,cust:0,started:false,timers:[]};
+
+/* ---------- AUDIO ---------- */
+let voice=null,ac=null;
+function pickVoice(){if(!("speechSynthesis" in window))return;const v=speechSynthesis.getVoices();voice=v.find(x=>/^en[-_]US/i.test(x.lang))||v.find(x=>/^en/i.test(x.lang))||null}
+if("speechSynthesis" in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
+function speak(t){return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="en-US";if(voice)u.voice=voice;u.rate=.78;u.pitch=1.1;speechSynthesis.speak(u)}catch(e){}}
+function tone(f,d,t="sine",delay=0){if(!S.sound)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(.12,ac.currentTime+delay);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+delay+d);o.connect(g);g.connect(ac.destination);o.start(ac.currentTime+delay);o.stop(ac.currentTime+delay+d)}catch(e){}}
+const sfxOk=()=>{};
+const sfxNo=()=>{};
+const sfxWin=()=>[523,659,784,1047].forEach((f,i)=>tone(f,.25,"triangle",i*.14));
+function setSound(on){S.sound=on;const t=on?"🔊 Sound ON":"🔇 Sound OFF";$("bSound").textContent=t;$("wSound").textContent=t;if(!on&&"speechSynthesis" in window)speechSynthesis.cancel()}
+const later=(f,ms)=>{const t=setTimeout(f,ms);S.timers.push(t)};
+const clearTimers=()=>{S.timers.forEach(clearTimeout);S.timers=[]};
+
+/* ---------- FX ---------- */
+function confetti(n=36){const em=["⭐","✨","🎉","🍬","💖","🌟"];for(let i=0;i<n;i++){const s=document.createElement("span");s.className="conf";s.textContent=rnd(em);s.style.left=Math.random()*100+"vw";s.style.animationDelay=Math.random()*.6+"s";document.body.appendChild(s);setTimeout(()=>s.remove(),2800)}}
+function sparkle(el){const r=el.getBoundingClientRect();for(let i=0;i<5;i++){const s=document.createElement("span");s.className="spark";s.textContent="✨";s.style.left=r.left+Math.random()*r.width+"px";s.style.top=r.top+Math.random()*r.height+window.scrollY+"px";s.style.position="absolute";document.body.appendChild(s);setTimeout(()=>s.remove(),900)}}
+function mood(c){const f=$("face");f.className="face "+c;if(c==="happy")later(()=>f.className="face",1500)}
+
+/* ---------- ACTIVITY BUILDING ---------- */
+function choices(target,n,pool){const others=shuf(pool.filter(x=>x!==target)).slice(0,n-1);return shuf([target,...others])}
+function randOrder(n){let o;do{o=shuf(LETTERS.map(x=>x.u)).slice(0,n)}while(o.join("")===o.slice().sort().join(""));return o}
+function buildSteps(i){
+  const all=LETTERS.map(x=>x.u);
+  if(i===0){const g=all.slice(0,5);return shuf(g).slice(0,3).map(t=>({t,kind:"find",opts:choices(t,4,g)}))}
+  if(i>=1&&i<=4){const o=randOrder(i===4?4:3);return o.map((t,k)=>({t,kind:"seq",k,opts:choices(t,4,all)}))}
+  if(i===5)return shuf(all).slice(0,3).map(t=>({t,kind:"pic",opts:choices(t,4,all)}));
+  const t=shuf(all).slice(0,3);return [{t:t[0],kind:"find",opts:choices(t[0],3,all)},{t:t[1],kind:"little",opts:choices(t[1],4,all)},{t:t[2],kind:"starts",opts:choices(t[2],5,all)}];
+}
+function startAct(i){
+  clearTimers();S.act=((i%ACTS)+ACTS)%ACTS;S.step=0;S.tower=[];S.locked=false;
+  S.steps=buildSteps(S.act);S.cust=(S.cust+1)%CUST.length;
+  $("done").classList.remove("on");$("tower").innerHTML="";
+  const c=CUST[S.cust];$("face").innerHTML=chr(KIND[c.e]);$("cname").textContent=c.n;mood("");
+  $("lvl").textContent=LVL[S.act];$("msg").textContent="";
+  showStep(true);renderProg();
+}
+function promptFor(st,first){
+  const L=BY[st.t];
+  if(st.kind==="find")return `Find the letter ${L.u}!`;
+  if(st.kind==="little")return `Find little ${L.l}!`;
+  if(st.kind==="starts")return `Which letter starts the word ${L.word}?`;
+  if(st.kind==="pic")return `I want the ${L.word} ice cream! Which letter?`;
+  const n=S.steps.length,k=st.k;const w=k===0?"First, add":k===n-1?"Finally, add":"Next, add";return `${w} ${L.u}.`;
+}
+function showStep(first){
+  const st=S.steps[S.step],L=BY[st.t],p=promptFor(st);
+  const intro=first?`${CUST[S.cust].hi} Can you make my magical ice cream? `:"";
+  $("bubble").textContent=(first?CUST[S.cust].hi+" ":"")+p;
+  $("instr").textContent=p;
+  let ob="";
+  if(st.kind==="find")ob=`<div class="ol">${L.u}<small>${L.l}</small></div>`;
+  else if(st.kind==="little")ob=`<div class="ol">${L.l}</div>`;
+  else if(st.kind==="starts")ob=`<div class="pic">${L.pic}</div><div style="font-size:24px;font-weight:800">${L.word}</div>`;
+  else if(st.kind==="pic")ob=`<div class="pic">${L.pic}</div><div style="font-size:24px;font-weight:800">${L.word}</div>`;
+  else ob=`<div class="seq">${S.steps.map((s,k)=>`<b class="${k<S.step?"ok":k===S.step?"cur":""}">${k<S.step?"✓":s.t}</b>`).join("")}</div>`;
+  $("orderBody").innerHTML=ob;
+  $("shelf").innerHTML="";
+  st.opts.forEach((u,k)=>{const x=BY[u],b=document.createElement("button");b.className="opt";b.style.background=`radial-gradient(circle at 35% 30%,#fff9,transparent 45%),${FLAV[(S.step*3+k+S.act)%FLAV.length]}`;b.dataset.l=u;b.setAttribute("aria-label",`Letter ${x.u}, ${x.l}`);b.innerHTML=`${x.u}<small>${x.l}</small>`;b.onclick=()=>pick(u,b);$("shelf").appendChild(b)});
+  say(intro+(st.kind==="pic"||st.kind==="starts"?(st.kind==="pic"?`Apple`.replace("Apple",L.word)+". Which letter?":p):p));
+}
+function say(t){speak(t)}
+function pick(u,btn){
+  if(S.locked||S.paused)return;
+  const st=S.steps[S.step];
+  if(u===st.t){
+    S.locked=true;sfxOk();sparkle(btn);
+    const L=BY[u];
+    S.tower.push(u);S.collected.add(u);
+    addScoop(L,S.tower.length-1);
+    $("msg").textContent=rnd(OK)+(st.kind==="find"||st.kind==="seq"?` You found ${L.u}!`:"");
+    mood("happy");
+    const w=(st.kind==="pic"||st.kind==="starts")?`${L.name}. ${L.word}.`:L.name;
+    speak(w);
+    renderProg();
+    later(()=>{S.step++;S.locked=false;if(S.step>=S.steps.length)finish();else{$("msg").textContent="";showStep()}},1700);
+  }else{
+    sfxNo();btn.classList.remove("wob");void btn.offsetWidth;btn.classList.add("wob");
+    const m=rnd(NO);$("msg").textContent=m;speak(m);
+  }
+}
+function addScoop(L,idx){
+  const d=document.createElement("div");d.className="scoop";d.style.bottom=(idx*56)+"px";d.style.zIndex=idx+1;d.style.background=FLAV[(S.act+idx*2)%FLAV.length];d.innerHTML=`${L.u}<i></i>`;
+  d.setAttribute("aria-label",`Scoop ${L.u}`);$("tower").appendChild(d);
+  setTimeout(()=>sparkle(d),500);
+}
+function finish(){
+  S.doneActs.add(S.act);renderProg();sfxWin();confetti();
+  $("face").className="face eat";$("doneFace").innerHTML='<div style="width:130px;margin:auto">'+chr(KIND[CUST[S.cust].e])+'</div>';
+  $("msg").textContent="You made a magical ice cream!";
+  speak("Wonderful! You made a magical ice cream!");
+  later(()=>$("done").classList.add("on"),900);
+  later(()=>{const b=$("bMore");if(b)b.focus()},1100);
+}
+function renderProg(){
+  $("pLet").textContent=`Letters collected: ${S.collected.size} / 13`;
+  $("chips").innerHTML=LETTERS.map(x=>`<span class="chip ${S.collected.has(x.u)?"on":""}">${x.u}</span>`).join("");
+  $("pOrd").firstChild.textContent=`Orders completed: ${S.doneActs.size} / ${ACTS} `;
+  $("stars").textContent="⭐".repeat(S.doneActs.size)+"☆".repeat(ACTS-S.doneActs.size);
+}
+function showScreen(id){document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id))}
+
+/* ---------- CONTROLS ---------- */
+$("startBtn").onclick=()=>{S.sound=S.sound;showScreen("game");startAct(S.started?S.act:0);S.started=true;
+  /* sound begins only after the child's first click: honour toggle state */};
+$("wSound").onclick=()=>{setSound(!S.sound);if(S.sound){sfxOk();}};
+$("bSound").onclick=()=>{setSound(!S.sound);if(S.sound)sfxOk()};
+$("bRep").onclick=()=>{if(S.paused)return;const st=S.steps[S.step];const L=BY[st.t];speak(`${promptFor(st)} ${L.name}. ${L.word}. Starts with the sound ${L.snd.replace(/\//g,"")}.`.replace(/Starts with the sound .*$/,""))};
+$("bPause").onclick=()=>{S.paused=true;$("pause").classList.add("on");if("speechSynthesis" in window)speechSynthesis.cancel();$("bResume").focus()};
+$("bResume").onclick=()=>{S.paused=false;$("pause").classList.remove("on")};
+$("bRestart").onclick=()=>startAct(S.act);
+$("bNext").onclick=()=>startAct(S.act+1);
+$("bMore").onclick=()=>startAct(S.act+1);
+$("bAgain").onclick=()=>startAct(S.act);
+$("bHome").onclick=()=>{
+  if(S.collected.size>0&&!confirm("Go back to the start? Your stars will stay safe until you close the page."))return;
+  clearTimers();if("speechSynthesis" in window)speechSynthesis.cancel();$("done").classList.remove("on");showScreen("welcome");
+};
+setSound(true);$("hero").innerHTML='<div class="hc">'+chr("bear")+'</div><span>🍦</span><div class="hc">'+chr("bunny")+'</div>';
+/* Decorations */
+(function(){const d=document.querySelector(".deco"),e=["⭐","✨","☁️","🍬","🍭","🍦","💖","☁️"];for(let i=0;i<16;i++){const s=document.createElement("span");s.textContent=e[i%e.length];s.style.left=Math.random()*96+"%";s.style.top=Math.random()*92+"%";s.style.fontSize=(18+Math.random()*26)+"px";s.style.animationDelay=Math.random()*5+"s";d.appendChild(s)}})();
+renderProg();
+</script></body></html>
